@@ -4,27 +4,41 @@ import java.util.ArrayDeque;
 
 public class Prefixe {
     public static void main(String[] args) {
-        ArrayDeque<Node<String>> pile = new ArrayDeque<>();
+        ArrayDeque<Node<String>> stack = new ArrayDeque<>();
+
         for (String arg : args) {
-            try {
-                Integer.parseInt(arg);
-                pile.addFirst(new Node<String>(arg));
-            } catch (NumberFormatException e) {
-                if (pile.size() < 2) {
+            if (isNumeric(arg)) {
+                stack.addFirst(new Node<String>(arg));
+            } else {
+                if (stack.size() < 2) {
                     System.err.println("Invalid stack size.");
                     return;
                 }
-                
-                Node<String> n2 = pile.pollFirst();
-                Node<String> n1 = pile.pollFirst();
+
+                Node<String> n2 = stack.pollFirst();
+                Node<String> n1 = stack.pollFirst();
                 Node<String> n3 = new Node<String>(arg);
                 n3.addSubNode(n1);
                 n3.addSubNode(n2);
-                
-                pile.addFirst(n3);
+
+                stack.addFirst(n3);
             }
         }
-        pile.pollFirst().showNode();
-        System.out.println("");
+
+        if (stack.size() != 1) {
+            System.err.println("Invalid stack .");
+        } else {
+            stack.pollFirst().showNode();
+            System.out.println("");
+        }
+    }
+
+    private static boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

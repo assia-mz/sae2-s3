@@ -1,0 +1,7 @@
+Test :
+
+|| Node, Tree, PrefixCalculator ||
+- + 3 * 4 5 : 23.0
+- + * 3 4 5 : 17.0
+- + * 3 4 b : error
+

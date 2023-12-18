@@ -8,7 +8,7 @@ public class PrefixCalculator {
         expressionTree = new Tree<>();
     }
 
-    public void buildExpressionTree(String prefixExpression) throws IllegalArgumentException {
+    public void buildExpressionTree(String prefixExpression, Cellule cellule) throws IllegalArgumentException {
         String[] tokens = prefixExpression.split("\\s+");
         Stack<Node<String>> stack = new Stack<>();
         int operandCount = 0;
@@ -22,7 +22,7 @@ public class PrefixCalculator {
             if (isOperator(token)) {
                 operatorCount++;
                 if (stack.size() < 2) {
-                    throw new IllegalArgumentException("Invalid expression: insufficient operands for operator " + token + ". Please consider checking your expression.");
+                    throw new IllegalArgumentException("Expression invalide : opérandes insuffisantes pour l'opérateur " + token + ". Veuillez vérifier votre expression.");
                 }
 
                 newNode.addSubNode(stack.pop());
@@ -35,18 +35,19 @@ public class PrefixCalculator {
         }
 
         if (operatorCount >= operandCount) {
-            throw new IllegalArgumentException("Invalid expression: too many operators");
+            throw new IllegalArgumentException("Expression invalide : trop d'opérateurs");
         }
 
         if (stack.size() != 1) {
-            throw new IllegalArgumentException("Invalid expression: insufficient operators");
+            throw new IllegalArgumentException("Expression invalide : opérateurs insuffisants");
         }
 
         expressionTree.setRootNode(stack.pop());
+        cellule.setArbre(expressionTree);
     }
 
-    public double getResult() {
-        return evaluateNode(expressionTree.getRootNode());
+    public double getResult(Cellule cellule) {
+        return evaluateNode(cellule.getArbre().getRootNode());
     }
 
     private double evaluateNode(Node<String> node) {
@@ -66,7 +67,7 @@ public class PrefixCalculator {
                 case "/":
                     return operand1 / operand2;
                 default:
-                    throw new IllegalArgumentException("Unsupported operator: " + value);
+                    throw new IllegalArgumentException("Opérateur non pris en charge : " + value);
             }
         } else {
             return Double.parseDouble(value);
@@ -77,7 +78,7 @@ public class PrefixCalculator {
         return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
     }
 
-    public void showExpressionTree() {
-        expressionTree.showTree();
+    public void showExpressionTree(Cellule cellule) {
+        cellule.getArbre().showTree();
     }
 }

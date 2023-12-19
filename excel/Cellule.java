@@ -35,7 +35,7 @@ public class Cellule {
     }
 
     public void setEtatCellule(EnumEtatCellule etatCellule) {
-        this.etatCellule = etatCellule;
+        this.etatCellule = etatCellule; // A MODIFIER
     }
 
     public Tree<String> getArbre() {

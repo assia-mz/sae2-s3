@@ -3,6 +3,7 @@ To do :
 * catch exception pour les lettres
 * catch exception quand il n'y a pas d'espaces
 * Ajouter une fonction rebuild tree qui s'active quand la formule qui n'est pas null à la base est changée 
+* Lorsqu'un formule est ajoutée ou modifier changer l'état de la cellule
 
 
 +----------------------------------------------------------------+
@@ -20,14 +21,14 @@ Done :
 - [ X ]  Chaque cellule contient une formule (initialement vide)
 - [ ]  [chaque cellule] peut être modifiée par l'utilisateur sous forme de texte
     - [ ]  les mots doivent être des constantes réelles, des références à une autre cellule (avec la notation vue plus haut), ou des opérateurs arithmétiques (**+** **-** ***** **/**)
-    - [ ]  respecter la **notation préfixe**
+    - [ X ]  respecter la **notation préfixe**
     - [ ]  4 situations distinctes visuellement
         - [ ]  La cellule contient une formule vide
         - [ ]  La cellule contient une formule correcte et calculable
             - [ ]  obéit aux régles de grammaire énoncées
             - [ ]  n'introduit pas de **référence circulaire**
         - [ ]  La cellule contient une formule correcte mais incalculable
-            - [ ]  division par 0 **ou** référence à une formule incorrecte ou ********************************************************************************incalculable
+            - [ ]  division par 0 **ou** référence à une formule incorrecte ou incalculable
         - [ ]  La cellule contient une formule incorrecte
 - [ ]  Les formules ne seront pas affichées dans la feuille de calcul
 - [ ]  cellule contenant une formule correcte et calculable, on fait le calcul correspondant et on affiche seulement le résultat

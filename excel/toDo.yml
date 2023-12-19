@@ -2,3 +2,36 @@ To do :
 
 * catch exception pour les lettres
 * catch exception quand il n'y a pas d'espaces
+* Ajouter une fonction rebuild tree qui s'active quand la formule qui n'est pas null à la base est changée 
+
+
++----------------------------------------------------------------+
+Done :
+* catch exception quand trop ou pas assez de chiffres
+* 
+
+
++----------------------------------------------------------------+
+### Cahier des charges:
+
+- [ ]  feuille de calcul de 9 lignes et 9 colonnes
+- [ X ]  manipuler seulement des réels à l'aide d'une liste limitée d'opérateurs
+- [ ]  cellules référencées par une combinaison de ces deux indices (par exemple **B7**)
+- [ X ]  Chaque cellule contient une formule (initialement vide)
+- [ ]  [chaque cellule] peut être modifiée par l'utilisateur sous forme de texte
+    - [ ]  les mots doivent être des constantes réelles, des références à une autre cellule (avec la notation vue plus haut), ou des opérateurs arithmétiques (**+** **-** ***** **/**)
+    - [ ]  respecter la **notation préfixe**
+    - [ ]  4 situations distinctes visuellement
+        - [ ]  La cellule contient une formule vide
+        - [ ]  La cellule contient une formule correcte et calculable
+            - [ ]  obéit aux régles de grammaire énoncées
+            - [ ]  n'introduit pas de **référence circulaire**
+        - [ ]  La cellule contient une formule correcte mais incalculable
+            - [ ]  division par 0 **ou** référence à une formule incorrecte ou ********************************************************************************incalculable
+        - [ ]  La cellule contient une formule incorrecte
+- [ ]  Les formules ne seront pas affichées dans la feuille de calcul
+- [ ]  cellule contenant une formule correcte et calculable, on fait le calcul correspondant et on affiche seulement le résultat
+- [ ]  Lorsque l'utilisateur sélectionne une cellule dans la feuille de calcul, celle-ci doit être visuellement mise en avant
+- [ ]  sa formule apparaîtra dans une zone d'édition dédiée
+- [ ]  Quand le focus est dans cette zone et l'utilisateur appuie sur la touche `↵`
+- [ ]  la modification de la formule est prise en compte et l'affichage de la cellule est mis à jour. (Ceci peut avoir un effet sur d'autres cellules : vous devez bien choisir l'ordre des mises à jour (solution → Observable())

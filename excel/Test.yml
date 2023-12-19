@@ -5,3 +5,12 @@ Test :
 - + * 3 4 5 : 17.0
 - + * 3 4 b : error
 
+|| Node, Tree, PrefixCalculator, Cellule ||
+- * + 2 3 4 : 20.0
+- + 3 * 4 5 : 23.0
+- + * 3 4 5 : 17.0
+- + * 3 4 b : Exception in thread "main" java.lang.NumberFormatException: For input string: "b"
+- + * 3 - 4 5 : Error building expression tree: Expression invalide : opérandes insuffisantes pour l'opérateur +. Veuillez vérifier votre expression.
+- + * 3 6 4 5 : Error building expression tree: Expression invalide : opérateurs insuffisants
+- 2+2 : Exception in thread "main" java.lang.NumberFormatException: For input string: "2+2"
+- 2 + 2 : Error building expression tree: Expression invalide : opérandes insuffisantes pour l'opérateur +. Veuillez vérifier votre expression.

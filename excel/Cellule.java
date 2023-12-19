@@ -1,4 +1,3 @@
-// Cellule.java
 package excel;
 
 public class Cellule {

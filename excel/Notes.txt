@@ -1,0 +1,6 @@
+Notes :
+
++----------------------------------------------------------------+
+
+Le fichier main est pour tester l'ancienne version de Tree, Node et PrefixCalculator
+Le fichier main2 est pour tester la version actuelle de Cellule (et qui s'appuie sur Tree, PrefixCalculator, etc.)

@@ -1,7 +1,7 @@
 package excel;
 
 /**
- * La classe Main contient la méthode principale pour exécuter le programme de calcul préfixe.
+ * La classe Main contient la méthode principale pour exécuter (l'ancien) programme de calcul préfixe.
  */
 public class Main {
     /**

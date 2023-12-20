@@ -1,0 +1,6 @@
+Couleur/Nombre :
+
+vide = 1 = gris
+calculable et correcte = 2 = vert
+incalutable et correcte = 3 = orange
+incalutable et incorrecte = 4 = rouge

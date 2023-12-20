@@ -23,13 +23,13 @@ Done :
     - [ ]  les mots doivent être des constantes réelles, des références à une autre cellule (avec la notation vue plus haut), ou des opérateurs arithmétiques (**+** **-** ***** **/**)
     - [ X ]  respecter la **notation préfixe**
     - [ ]  4 situations distinctes visuellement
-        - [ ]  La cellule contient une formule vide
-        - [ ]  La cellule contient une formule correcte et calculable
-            - [ ]  obéit aux régles de grammaire énoncées
+        - [ X ]  La cellule contient une formule vide (gris)
+        - [ ]  La cellule contient une formule correcte et calculable (vert)
+            - [ X ]  obéit aux régles de grammaire énoncées
             - [ ]  n'introduit pas de **référence circulaire**
-        - [ ]  La cellule contient une formule correcte mais incalculable
-            - [ ]  division par 0 **ou** référence à une formule incorrecte ou incalculable
-        - [ ]  La cellule contient une formule incorrecte
+        - [ ]  La cellule contient une formule correcte mais incalculable (orange)
+            - [ ]  division par 0 **ou** référence à une formule incorrecte ou incalculable (rouge)
+        - [ X ]  La cellule contient une formule incorrecte
 - [ ]  Les formules ne seront pas affichées dans la feuille de calcul
 - [ ]  cellule contenant une formule correcte et calculable, on fait le calcul correspondant et on affiche seulement le résultat
 - [ ]  Lorsque l'utilisateur sélectionne une cellule dans la feuille de calcul, celle-ci doit être visuellement mise en avant

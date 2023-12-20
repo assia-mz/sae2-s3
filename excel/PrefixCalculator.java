@@ -3,6 +3,7 @@ import java.util.Stack;
 
 public class PrefixCalculator {
     private Tree<String> expressionTree;
+    private int statut;
 
     public PrefixCalculator() {
         expressionTree = new Tree<>();
@@ -13,38 +14,57 @@ public class PrefixCalculator {
         Stack<Node<String>> stack = new Stack<>();
         int operandCount = 0;
         int operatorCount = 0;
-
+    
         for (int i = tokens.length - 1; i >= 0; i--) {
             String token = tokens[i];
-
-            Node<String> newNode = new Node<>(token);
-
+    
+            Node<String> newNode;
+    
+            // Check if the token is a cell reference (e.g., B7, A3, E28)
+            if (isCellReference(token)) {
+                newNode = new Node<>(token);
+                System.out.println("Y'EN A UN AGHHHHH");
+                operandCount++;
+            } else {
+                newNode = new Node<>(token);
+                operandCount++;
+            }
+    
             if (isOperator(token)) {
                 operatorCount++;
                 if (stack.size() < 2) {
+                    statut = 4;
                     throw new IllegalArgumentException("Expression invalide : opérandes insuffisantes pour l'opérateur " + token + ". Veuillez vérifier votre expression.");
                 }
-
+    
                 newNode.addSubNode(stack.pop());
                 newNode.addSubNode(stack.pop());
-            } else {
-                operandCount++;
             }
-
+    
             stack.push(newNode);
         }
-
+    
         if (operatorCount >= operandCount) {
+            statut = 4;
             throw new IllegalArgumentException("Expression invalide : trop d'opérateurs");
         }
-
+    
         if (stack.size() != 1) {
+            statut = 4;
             throw new IllegalArgumentException("Expression invalide : opérateurs insuffisants");
         }
-
+    
+        statut = 2;
         expressionTree.setRootNode(stack.pop());
         cellule.setArbre(expressionTree);
     }
+    
+    private boolean isCellReference(String token) {
+        // Add logic to check if the token is a cell reference (e.g., B7, A3, E28)
+        // For simplicity, you can check if the token consists of a letter followed by one or more digits.
+        return token.matches("[A-Z]+\\d+");
+    }    
+
 
     public double getResult(Cellule cellule) {
         return evaluateNode(cellule.getArbre().getRootNode());

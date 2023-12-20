@@ -31,6 +31,12 @@ public class Cellule {
         this.valeur = valeur;
     }
 
+    public void isCellCalled(){
+        if (this.reference ==true){
+            System.out.println("Reference dans cellule");
+        }
+    }
+
     public void cyclesInTree(){
         //if (..){ //verification des cycles
             updateEtatStatut(3);    

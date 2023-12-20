@@ -4,9 +4,11 @@ import java.util.Stack;
 public class PrefixCalculator {
     private Tree<String> expressionTree;
     private int statut;
+    private boolean reference = false;
 
     public PrefixCalculator() {
         expressionTree = new Tree<>();
+        this.reference = false;
     }
 
     public void buildExpressionTree(String prefixExpression, Cellule cellule) throws IllegalArgumentException {
@@ -24,6 +26,7 @@ public class PrefixCalculator {
             if (isCellReference(token)) {
                 newNode = new Node<>(token);
                 System.out.println("Y'EN A UN AGHHHHH");
+                addObserver();
                 operandCount++;
             } else {
                 newNode = new Node<>(token);
@@ -61,14 +64,21 @@ public class PrefixCalculator {
     
     private boolean isCellReference(String token) {
         // Add logic to check if the token is a cell reference (e.g., B7, A3, E28)
-        // For simplicity, you can check if the token consists of a letter followed by one or more digits.
-        return token.matches("[A-Z]+\\d+");
-    }    
+        if (token.matches("[A-Z]+\\d+")){
+            this.reference = true;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 
 
     public double getResult(Cellule cellule) {
         return evaluateNode(cellule.getArbre().getRootNode());
     }
+
 
     private double evaluateNode(Node<String> node) {
         String value = node.getValue();
@@ -101,4 +111,9 @@ public class PrefixCalculator {
     public void showExpressionTree(Cellule cellule) {
         cellule.getArbre().showTree();
     }
+
+    public void addObserver(){
+        System.out.println("J'ai été appelé");
+    }
+
 }

@@ -1,5 +1,8 @@
 Notes :
 
+Il faut créer un moyen de récuperer this.reference du fichier prefixCalculator dans Cellule.java afin de gerer les changement dans les cellules
+quand la formule de la cellule de référence est changée
+
 +----------------------------------------------------------------+
 
 Le fichier main est pour tester l'ancienne version de Tree, Node et PrefixCalculator

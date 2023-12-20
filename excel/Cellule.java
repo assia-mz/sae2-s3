@@ -1,16 +1,23 @@
 package excel;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cellule {
+    private List<String> references;
     private String formuleTexte;
     private Double valeur;
     private EnumEtatCellule etatCellule;
     private Tree<String> arbre;
 
-
     public Cellule() {
         this.valeur = null;
         this.etatCellule = EnumEtatCellule.VIDE;
         this.arbre = new Tree<>();
+        this.references = new ArrayList<>();
+    }
+
+    public List<String> getReferences() {
+        return references;
     }
 
     public String getFormuleTexte() {
@@ -19,8 +26,6 @@ public class Cellule {
 
     public void setFormuleTexte(String formuleTexte) {
         this.formuleTexte = formuleTexte;
-        // Notifie les observateurs que la formule a été mise à jour
-        //notifierObservateurs();
     }
 
     public Double getValeur() {
@@ -31,34 +36,12 @@ public class Cellule {
         this.valeur = valeur;
     }
 
-    public void isCellCalled(){
-        if (this.reference ==true){
-            System.out.println("Reference dans cellule");
-        }
+    public void cyclesInTree() {
+        // Logic for checking cycles in the arbre
+        updateEtatStatut(3);
     }
 
-    public void cyclesInTree(){
-        //if (..){ //verification des cycles
-            updateEtatStatut(3);    
-        //S}
-    }
-
-    /*public void updateEtatStatut(int statut) {
-        if (statut == 4) {
-            this.etatCellule = EnumEtatCellule.INCORRECTE;
-        } else if (statut == 2) {
-            this.etatCellule = EnumEtatCellule.CALCULABLE;
-        } else if (statut == 3) {
-            System.out.println("Votre cellule est dans un cycle ou divisée par 0");
-            this.etatCellule = EnumEtatCellule.INCALCULABLE;
-        } else if (statut==1) {
-            this.etatCellule = EnumEtatCellule.VIDE;
-        } else {
-            throw new java.lang.RuntimeException("petit problème là");
-        }
-    }   */
-    
-    public EnumEtatCellule updateEtatStatut(int statut){
+    public EnumEtatCellule updateEtatStatut(int statut) {
         System.out.println("statut :" + statut);
         switch (statut) {
             case 1:
@@ -78,7 +61,7 @@ public class Cellule {
         }
     }
 
-    public EnumEtatCellule getEtatCellule(){
+    public EnumEtatCellule getEtatCellule() {
         return this.etatCellule;
     }
 
@@ -88,5 +71,15 @@ public class Cellule {
 
     public void setArbre(Tree<String> arbre) {
         this.arbre = arbre;
+    }
+
+    public void isCellCalled() {
+        if (!this.references.isEmpty()) {
+            System.out.println("Cellule " + this.references.get(0) + " is called.");
+        }
+    }
+
+    public void setReference(String reference) {
+        this.references.add(reference);
     }
 }

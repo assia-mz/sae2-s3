@@ -8,12 +8,14 @@ public class Cellule {
     private Double valeur;
     private EnumEtatCellule etatCellule;
     private Tree<String> arbre;
+    private String nameCell;
 
-    public Cellule() {
+    public Cellule(char name, int n) {
         this.valeur = null;
         this.etatCellule = EnumEtatCellule.VIDE;
         this.arbre = new Tree<>();
         this.references = new ArrayList<>();
+        this.nameCell = String.valueOf(name) + n;
     }
 
     public List<String> getReferences() {
@@ -36,13 +38,13 @@ public class Cellule {
         this.valeur = valeur;
     }
 
-    public void cyclesInTree() {
+    public void detectCyclesInTree() {
         // Logic for checking cycles in the arbre
         updateEtatStatut(3);
     }
 
     public EnumEtatCellule updateEtatStatut(int statut) {
-        System.out.println("statut :" + statut);
+        System.out.println("statut: " + statut);
         switch (statut) {
             case 1:
                 System.out.println("vide");
@@ -57,7 +59,7 @@ public class Cellule {
                 System.out.println("incorrecte");
                 return this.etatCellule = EnumEtatCellule.INCORRECTE;
             default:
-                throw new IllegalArgumentException("PROBLEME ! ");
+                throw new IllegalArgumentException("PROBLEME!");
         }
     }
 
@@ -73,7 +75,7 @@ public class Cellule {
         this.arbre = arbre;
     }
 
-    public void isCellCalled() {
+    public void logCellCall() {
         if (!this.references.isEmpty()) {
             System.out.println("Cellule " + this.references.get(0) + " is called.");
         }

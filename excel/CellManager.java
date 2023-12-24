@@ -1,4 +1,5 @@
 package excel;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,11 +10,8 @@ public class CellManager {
         this.cells = new HashMap<>();
     }
 
-    public Cellule createCellule(String reference, Double value, String formula) {
-        Cellule cellule = new Cellule();
-        cellule.setReference(reference);
-        cellule.setValeur(value);
-        cellule.setFormuleTexte(formula);
+    public Cellule createCell(String reference, Double value, String formula) {
+        Cellule cellule = new Cellule(reference, value, formula);
         cells.put(reference, cellule);
         return cellule;
     }
@@ -31,17 +29,21 @@ public class CellManager {
     }
 
     private void calculateCell(Cellule cellule) {
-        // If the cell has a formula, calculate its value
-        if (cellule.getFormuleTexte() != null && !cellule.getFormuleTexte().isEmpty()) {
-            PrefixCalculator prefixCalculator = new PrefixCalculator();
-            try {
-                prefixCalculator.buildExpressionTree(cellule.getFormuleTexte(), cellule);
-                double result = prefixCalculator.getResult(cellule);
-                cellule.setValeur(result);
-                cellule.updateEtatStatut(2);
-            } catch (IllegalArgumentException e) {
-                System.err.println("Error calculating cell " + cellule.getReference() + ": " + e.getMessage());
-                cellule.updateEtatStatut(4);
+        // Check the state of the cell before calculating
+        if (cellule.getEtatCellule() == EnumEtatCellule.VIDE) {
+            // If the cell has a formula, calculate its value
+            if (cellule.getFormuleTexte() != null && !cellule.getFormuleTexte().isEmpty()) {
+                PrefixCalculator prefixCalculator = new PrefixCalculator();
+                try {
+                    prefixCalculator.buildExpressionTree(cellule.getFormuleTexte(), cellule);
+                    double result = prefixCalculator.getResult(cellule);
+                    cellule.setValeur(result);
+                    cellule.updateEtatStatut(2);
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Error calculating cell " + cellule.getReference() + ": " + e.getMessage());
+                    // Set the state to INCAPABLE in case of an error
+                    cellule.updateEtatStatut(3);
+                }
             }
         }
     }

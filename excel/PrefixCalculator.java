@@ -3,15 +3,12 @@ import java.util.Stack;
 
 public class PrefixCalculator {
     private Tree<String> expressionTree;
-    private int statut;
-    private boolean reference = false;
 
     public PrefixCalculator() {
         expressionTree = new Tree<>();
-        this.reference = false;
     }
 
-    public void buildExpressionTree(String prefixExpression, Cellule cellule) throws IllegalArgumentException {
+    public void buildExpressionTree(String prefixExpression, Cellule cellule) {
         String[] tokens = prefixExpression.split("\\s+");
         Stack<Node<String>> stack = new Stack<>();
         int operandCount = 0;
@@ -27,7 +24,7 @@ public class PrefixCalculator {
                 newNode = new Node<>(token);
                 System.out.println("Y'EN A UN AGHHHHH");
                 cellule.getReferences().add(token);
-                addObserver();
+                cellule.logCellCall();
                 operandCount++;
             } else {
                 newNode = new Node<>(token);
@@ -37,7 +34,6 @@ public class PrefixCalculator {
             if (isOperator(token)) {
                 operatorCount++;
                 if (stack.size() < 2) {
-                    statut = 4;
                     throw new IllegalArgumentException("Expression invalide : opérandes insuffisantes pour l'opérateur " + token + ". Veuillez vérifier votre expression.");
                 }
 
@@ -48,29 +44,17 @@ public class PrefixCalculator {
             stack.push(newNode);
         }
 
-        if (operatorCount >= operandCount) {
-            statut = 4;
-            throw new IllegalArgumentException("Expression invalide : trop d'opérateurs");
+        if (operatorCount >= operandCount || stack.size() != 1) {
+            throw new IllegalArgumentException("Expression invalide : vérifiez votre expression.");
         }
 
-        if (stack.size() != 1) {
-            statut = 4;
-            throw new IllegalArgumentException("Expression invalide : opérateurs insuffisants");
-        }
-
-        statut = 2;
         expressionTree.setRootNode(stack.pop());
         cellule.setArbre(expressionTree);
     }
 
     private boolean isCellReference(String token) {
         // Add logic to check if the token is a cell reference (e.g., B7, A3, E28)
-        if (token.matches("[A-Z]+\\d+")) {
-            this.reference = true;
-            return true;
-        } else {
-            return false;
-        }
+        return token.matches("[A-Z]+\\d+");
     }
 
     public double getResult(Cellule cellule) {
@@ -107,9 +91,5 @@ public class PrefixCalculator {
 
     public void showExpressionTree(Cellule cellule) {
         cellule.getArbre().showTree();
-    }
-
-    public void addObserver() {
-        System.out.println("J'ai été appelé");
     }
 }

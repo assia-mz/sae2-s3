@@ -140,7 +140,6 @@ public class ExcelSheetUI extends JFrame {
 
         // Print the list of dependencies for the selected cell
         System.out.println("LAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        selectedCell.printDependencies();
 
         //printDicoCellContents();
     }

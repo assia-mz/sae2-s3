@@ -121,7 +121,6 @@ public class Cellule {
 
     public void addDependance(Cellule cell) {
         System.out.println(this.listeDesDependances.add(cell));
-        printDependencies();
     }
 
     // +-------------------- Circular Dependency Check --------------------+
@@ -129,7 +128,6 @@ public class Cellule {
     public boolean hasCircularDependency() {
         Set<Cellule> visited = new HashSet<>();
         Set<Cellule> currentPath = new HashSet<>();
-
         for (Cellule cell : this.listeDesDependances) {
             if (!visited.contains(cell)) {
                 if (hasCircularDependencyDFS(cell, visited, currentPath)) {
@@ -162,6 +160,7 @@ public class Cellule {
 
     public void evaluateCell() {
         this.valeurCell = evaluateNode(this.arbre.getRootNode());
+        printDependencies();
     }
 
     private double evaluateNode(Node<String> node) {
@@ -210,4 +209,5 @@ public class Cellule {
             System.out.println(dependency.getName());
         }
     }
+
 }

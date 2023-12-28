@@ -1,10 +1,9 @@
 package excel;
 //import java.util.Observable;
 
-public class FeuilleDeCalcul /*extends Observable*/ {
-
+//public class FeuilleDeCalcul /*extends Observable*/ {
     // Attributs
-    private Cellule[][] tableau; // Tableau bidimensionnel de Cellules
+    /*private Cellule[][] tableau; // Tableau bidimensionnel de Cellules
     private Cellule celluleSelectionnee; // Cellule actuellement sélectionnée
 
     // Constructeur
@@ -24,7 +23,7 @@ public class FeuilleDeCalcul /*extends Observable*/ {
     public void selectionnerCellule(Cellule cellule) {
         celluleSelectionnee = cellule;
         // Notifie les observateurs de la sélection de la cellule
-        /*setChanged();*/
+        //setChanged();
     }
 
     // Met à jour la cellule et notifie les observateurs
@@ -32,7 +31,7 @@ public class FeuilleDeCalcul /*extends Observable*/ {
         cellule.evaluerFormule(); // Évalue la formule et met à jour la valeur
         // Notifie les observateurs de la mise à jour de la cellule
         /*setChanged();*/
-        /*notifyObservers("Cellule mise à jour : " + cellule.getFormuleTexte());*/
+        /*notifyObservers("Cellule mise à jour : " + cellule.getFormuleTexte());
     }
 
     // Initialisation de la feuille de calcul avec des cellules vides
@@ -44,3 +43,4 @@ public class FeuilleDeCalcul /*extends Observable*/ {
         }
     }
 }
+*/

@@ -1,14 +1,17 @@
 package v2;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Node<T> {
     private T value;
     private List<Node<T>> subNodes;
+    private boolean isLeftChild;
 
-    public Node(T value) {
+    public Node(T value, boolean isLeftChild) {
         this.value = value;
         this.subNodes = new ArrayList<>();
+        this.isLeftChild = isLeftChild;
     }
 
     public T getValue() {
@@ -33,6 +36,7 @@ public class Node<T> {
 
     public void showNode() {
         System.out.print(value.toString() + " ");
+        System.out.println(isLeftChild ? "(Left)" : "(Right)");  // Print whether the node is a left or right child
 
         for (Node<T> subNode : subNodes) {
             subNode.showNode();

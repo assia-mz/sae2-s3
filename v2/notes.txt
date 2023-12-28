@@ -1,0 +1,11 @@
++------- notes -------+
+
+(X) Show a window
+(X) Show the cells
+() Make the cell responsive correctly
+() Makes the bar at the top of the sheet
+() Make the bar responsive and make the like between formula and the cells 
+
+When all of this works REALLY WELL with only numbers 
+() Try to print DicoRef
+() Work on references

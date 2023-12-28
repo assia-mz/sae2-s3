@@ -14,7 +14,7 @@ public class Tree<T> {
      * Initialise une nouvelle instance de la classe Tree avec un nœud racine nul.
      */
     public Tree() {
-        rootNode = new Node<T>(null);
+        rootNode = new Node<T>(null, false);  // Set the initial root node as neither left nor right child
     }
 
     /**

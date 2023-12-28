@@ -1,4 +1,4 @@
-package excel;
+/*package excel;
 import java.util.Stack;
 
 public class PrefixCalculator {
@@ -93,3 +93,4 @@ public class PrefixCalculator {
         cellule.getArbre().showTree();
     }
 }
+*/

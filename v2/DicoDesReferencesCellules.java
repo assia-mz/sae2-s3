@@ -2,19 +2,18 @@ package v2;
 
 import java.util.HashMap;
 
-public class DicoDesReferencesCellules{
+public class DicoDesReferencesCellules {
+    private HashMap<String, Cellule> dicoRef;
 
-    private HashMap<String,Cellule> dicoRef;
-    
-    public DicoDesReferencesCellules(){
-        this.dicoRef = new HashMap<String,Cellule>();
+    public DicoDesReferencesCellules() {
+        this.dicoRef = new HashMap<>();
     }
 
-    public Cellule putDico(String name, Cellule valueOfCell){
+    public Cellule putDico(String name, Cellule valueOfCell) {
         return this.dicoRef.put(name, valueOfCell);
-    } 
+    }
 
-    public Cellule getCellule(String nameOfCellule){
-		return this.dicoRef.get(nameOfCellule);
-	}
+    public Cellule getCellule(String nameOfCellule) {
+        return this.dicoRef.get(nameOfCellule);
+    }
 }

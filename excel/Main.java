@@ -3,12 +3,12 @@ package excel;
 /**
  * La classe Main contient la méthode principale pour exécuter (l'ancien) programme de calcul préfixe.
  */
-public class Main {
+//public class Main {
     /**
      * La méthode principale du programme.
      * @param args Les arguments de la ligne de commande (non utilisés dans cet exemple).
      */
-    public static void main(String[] args) {
+    /*    public static void main(String[] args) {
         // Crée une instance de PrefixCalculator
         PrefixCalculator calculator = new PrefixCalculator();
         
@@ -24,3 +24,4 @@ public class Main {
         System.out.println("\nRésultat : " + result);
     }
 }
+*/

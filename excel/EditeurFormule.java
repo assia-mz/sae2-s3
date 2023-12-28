@@ -1,4 +1,4 @@
-package excel;
+/*package excel;
 import javax.swing.JTextArea;
 
 public class EditeurFormule {
@@ -28,3 +28,4 @@ public class EditeurFormule {
         }
     }
 }
+*/

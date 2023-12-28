@@ -112,7 +112,6 @@ public class Cellule {
 
     private boolean isCellReference(String token) {
         boolean result = token.matches("[A-I]+\\d+");
-        System.out.println("Token: " + token + ", isCellReference: " + result);
         return result;
     }
 
@@ -120,14 +119,9 @@ public class Cellule {
         cellule.getArbre().showTree();
     }
 
-    public boolean addDependance(Cellule cell) {
-        System.out.println("Cellule dont je (" + this.getName() + ") dépend :" + cell.getName());
-        System.out.println("Taille avant :" + listeDesDependances.size());
-        System.out.println("yess " + this.listeDesDependances.add(cell));
-        System.out.println("Taille après :" + listeDesDependances.size());
-        System.out.println("Test dépendances interieur : ");
+    public void addDependance(Cellule cell) {
+        System.out.println(this.listeDesDependances.add(cell));
         printDependencies();
-        return true;
     }
 
     // +-------------------- Circular Dependency Check --------------------+

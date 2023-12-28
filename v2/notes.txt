@@ -2,9 +2,17 @@
 
 (X) Show a window
 (X) Show the cells
-() Make the cell responsive correctly
-() Makes the bar at the top of the sheet
-() Make the bar responsive and make the like between formula and the cells 
+(X) Make the cell responsive correctly
+(X) Makes the bar at the top of the sheet
+(X) Make the bar responsive and make the like between formula and the cells 
+(X) Refresh when we change a formula 
+(X) Try to print DicoRef
+
+() Mark an error when the formula is not prefix
+() Make the formula print if not calculable
+() Change the color of the cell depending on the state
+
+
 
 When all of this works REALLY WELL with only numbers 
 () Try to print DicoRef

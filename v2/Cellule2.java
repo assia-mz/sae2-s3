@@ -6,63 +6,59 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-public class Cellule {
-    private DicoDesReferencesCellules DicoCell;
+public class Cellule2 {
+    private CellDictionary cellDictionary;
     private String name;
-    private double valeurCell;
-    private String formule;
-    private Tree<String> arbre;
-    private List<Cellule> listeDesDependances;
-    private EnumEtatCellule etatCellule;
-    private Set<Cellule> currentPath = new HashSet<>();
+    private double cellValue;
+    private String formula;
+    private Tree<String> expressionTree;
+    private List<Cellule2> dependencies;
+    private EnumEtatCellule cellState;
+    private Set<Cellule2> currentPath = new HashSet<>();
 
-    public Cellule(String name, DicoDesReferencesCellules DicoCell) {
+    public Cellule2(String name, CellDictionary cellDictionary) {
         this.name = name;
-        this.DicoCell = DicoCell;
-        this.listeDesDependances = new ArrayList<>();
-        this.arbre = new Tree<>();
-        this.etatCellule = EnumEtatCellule.VIDE;
-        this.formule = "";
+        this.cellDictionary = cellDictionary;
+        this.dependencies = new ArrayList<>();
+        this.expressionTree = new Tree<>();
+        this.cellState = EnumEtatCellule.VIDE;
+        this.formula = "";
     }
 
-    // +--------------- Basic Methods ---------------+
-
-    public void setFormule(String formule) {
-        this.formule = formule;
+    public void setFormula(String formula) {
+        this.formula = formula;
     }
 
-    public List<Cellule> getListeDesDependances() {
-        return this.listeDesDependances;
+    public List<Cellule2> getDependencies() {
+        return this.dependencies;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public void setValeur(double valeur) {
-        this.valeurCell = valeur;
+    public void setCellValue(double value) {
+        this.cellValue = value;
     }
 
-    public double getValeur() {
-        return this.valeurCell;
+    public double getCellValue() {
+        return this.cellValue;
     }
 
-    public EnumEtatCellule getEtatCellule() {
-        return this.etatCellule;
+    public EnumEtatCellule getCellState() {
+        return this.cellState;
     }
 
-    public String getFormule() {
-        return this.formule;
+    public String getFormula() {
+        return this.formula;
     }
 
-    public Tree<String> getArbre() {
-        return arbre;
+    public Tree<String> getExpressionTree() {
+        return expressionTree;
     }
 
-    // +--------------- Tree Creation Methods ---------------+
-
-    public void parcourirFormule() {
-        String[] tokens = formule.split("\\s+");
+    public void traverseFormula() {
+        String[] tokens = formula.split("\\s+");
         Stack<Node<String>> stack = new Stack<>();
         int operandCount = 0;
         int operatorCount = 0;
@@ -73,9 +69,10 @@ public class Cellule {
 
             if (isCellReference(token)) {
                 System.out.println("Cell reference found: " + token);
-                Cellule referencedCell = DicoCell.getCellule(token);
+
+                Cellule2 referencedCell = cellDictionary.getCellValue(token);
                 if (referencedCell != null) {
-                    addDependance(referencedCell);
+                    addDependency(referencedCell);
                 } else {
                     System.out.println("Cell not found for reference: " + token);
                 }
@@ -89,7 +86,7 @@ public class Cellule {
             if (isOperator(token)) {
                 operatorCount++;
                 if (stack.size() < 2) {
-                    throw new IllegalArgumentException("Invalid expression: insufficient operands for operator " + token + ". Please check your expression.");
+                    throw new IllegalArgumentException("Invalid expression: insufficient operands for the operator " + token + ". Please check your expression.");
                 }
 
                 newNode.addSubNode(stack.pop());
@@ -103,10 +100,11 @@ public class Cellule {
             throw new IllegalArgumentException("Invalid expression: check your expression.");
         }
 
-        this.arbre.setRootNode(stack.pop());
+        this.expressionTree.setRootNode(stack.pop());
     }
 
     private boolean isOperator(String token) {
+        System.out.println(token);
         return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
     }
 
@@ -116,27 +114,25 @@ public class Cellule {
         return result;
     }
 
-    public void showExpressionTree(Cellule cellule) {
-        cellule.getArbre().showTree();
+    public void showExpressionTree(Cellule2 Cellule2) {
+        Cellule2.getExpressionTree().showTree();
     }
 
-    public boolean addDependance(Cellule cell) {
-        System.out.println("Cellule dont je (" + this.getName() + ") dépend :" + cell.getName());
-        System.out.println("Taille avant :" + listeDesDependances.size());
-        System.out.println("yess " + this.listeDesDependances.add(cell));
-        System.out.println("Taille après :" + listeDesDependances.size());
-        System.out.println("Test dépendances interieur : ");
-        printDependencies();
+    public boolean addDependency(Cellule2 cell) {
+        System.out.println("Cell I depend on (" + this.getName() + "): " + cell.getName());
+        System.out.println(this.dependencies.add(cell));
         return true;
     }
 
-    // +-------------------- Circular Dependency Check --------------------+
+    private void resetDependencies(Cellule2 cell) {
+        this.dependencies.remove(cell);
+    }
 
     public boolean hasCircularDependency() {
-        Set<Cellule> visited = new HashSet<>();
-        Set<Cellule> currentPath = new HashSet<>();
+        Set<Cellule2> visited = new HashSet<>();
+        Set<Cellule2> currentPath = new HashSet<>();
 
-        for (Cellule cell : this.listeDesDependances) {
+        for (Cellule2 cell : dependencies) {
             if (!visited.contains(cell)) {
                 if (hasCircularDependencyDFS(cell, visited, currentPath)) {
                     return true;
@@ -147,11 +143,11 @@ public class Cellule {
         return false;
     }
 
-    private boolean hasCircularDependencyDFS(Cellule cell, Set<Cellule> visited, Set<Cellule> currentPath) {
+    private boolean hasCircularDependencyDFS(Cellule2 cell, Set<Cellule2> visited, Set<Cellule2> currentPath) {
         visited.add(cell);
         currentPath.add(cell);
 
-        for (Cellule dependency : cell.getListeDesDependances()) {
+        for (Cellule2 dependency : cell.getDependencies()) {
             if (!visited.contains(dependency)) {
                 if (hasCircularDependencyDFS(dependency, visited, currentPath)) {
                     return true;
@@ -161,13 +157,12 @@ public class Cellule {
             }
         }
 
+        currentPath.remove(cell);
         return false;
     }
 
-    // +-------------- Calculation Method ----------------+
-
     public void evaluateCell() {
-        this.valeurCell = evaluateNode(this.arbre.getRootNode());
+        this.cellValue = evaluateNode(this.expressionTree.getRootNode());
     }
 
     private double evaluateNode(Node<String> node) {
@@ -180,9 +175,9 @@ public class Cellule {
             return performOperation(value, operand1, operand2);
         } else {
             if (isCellReference(value)) {
-                Cellule referencedCell = DicoCell.getCellule(value);
+                Cellule2 referencedCell = cellDictionary.getCellValue(value);
                 if (referencedCell != null) {
-                    return referencedCell.getValeur();
+                    return referencedCell.getCellValue();
                 } else {
                     throw new IllegalArgumentException("Cell not found for reference: " + value);
                 }
@@ -212,7 +207,7 @@ public class Cellule {
 
     public void printDependencies() {
         System.out.println("Dependencies for cell " + this.getName() + ":");
-        for (Cellule dependency : this.getListeDesDependances()) {
+        for (Cellule2 dependency : this.getDependencies()) {
             System.out.println(dependency.getName());
         }
     }

@@ -14,6 +14,14 @@ public class DicoDesReferencesCellules {
     }
 
     public Cellule getCellule(String nameOfCellule) {
-        return this.dicoRef.get(nameOfCellule);
+        System.out.println("Searching for cell: " + nameOfCellule);
+        Cellule cell = this.dicoRef.get(nameOfCellule);
+        System.out.println("Found cell: " + cell);
+        return cell;
+    }    
+
+    // Added method to get the underlying dictionary
+    public HashMap<String, Cellule> getDico() {
+        return new HashMap<>(dicoRef); // Return a copy to prevent external modifications
     }
 }

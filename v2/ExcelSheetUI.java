@@ -1,20 +1,18 @@
 package v2;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.HashMap;
 
 public class ExcelSheetUI extends JFrame {
     private Map<String, JLabel> cellLabels;
     private JTextField formulaField;
-    private Stack<JLabel> visitedCellStack = new Stack<>();
+    private Stack<Pair<JLabel, Cellule>> visitedCellStack = new Stack<>();
+    private DicoDesReferencesCellules dicoCell;
 
     public ExcelSheetUI() {
-        // Set up the main JFrame
         setTitle("Excel Sheet");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -28,9 +26,8 @@ public class ExcelSheetUI extends JFrame {
         // Create a panel for the cells using GridLayout
         JPanel cellPanel = new JPanel(new GridLayout(9, 9));
         cellLabels = new HashMap<>();
+        dicoCell = new DicoDesReferencesCellules();
 
-        // Create Cellule objects for each cell and corresponding JLabels
-        DicoDesReferencesCellules dicoCell = new DicoDesReferencesCellules();
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
                 String cellName = getCellName(row, col);
@@ -50,10 +47,15 @@ public class ExcelSheetUI extends JFrame {
         add(formulaPanel, BorderLayout.NORTH);
         add(cellPanel, BorderLayout.CENTER);
 
-        // Set a custom size for the JFrame
-        setSize(600, 600);
+        // Add a key listener to the formula field for "Enter" key
+        formulaField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                applyFormula();
+            }
+        });
 
-        // Center the JFrame on the screen
+        setSize(600, 600);
         setLocationRelativeTo(null);
     }
 
@@ -72,38 +74,89 @@ public class ExcelSheetUI extends JFrame {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            System.out.println("Stack size before pop: " + visitedCellStack.size());
-            if (!visitedCellStack.empty()) {
-                JLabel old = visitedCellStack.pop();
-                old.setBackground(Color.RED);
-                old.setOpaque(true);
-                old.repaint();
-                System.out.println(old.getText());
+            if (!visitedCellStack.isEmpty()) {
+                Pair<JLabel, Cellule> oldPair = visitedCellStack.pop();
+                JLabel oldLabel = oldPair.getFirst();
+                oldLabel.setBackground(Color.RED);
+                oldLabel.setOpaque(true);
+                oldLabel.repaint();
             }
-            Component component = findComponentAt(e.getX(), e.getY());
+
+            Component component = e.getComponent();
             if (component instanceof JLabel) {
                 JLabel clickedLabel = (JLabel) component;
                 String cellName = clickedLabel.getText();
                 System.out.println("Clicked on cell: " + cellName);
 
-                // Set the formula field text to the formula of the clicked cell
-                formulaField.setText(cell.getFormule());
+                // Print the formula for the clicked cell
+                String formula = cell.getFormule();
+                System.out.println("Formula for " + cellName + ": " + formula);
 
-                // Add the clicked cell to the stack and print the stack
+                // Set the formula field text to the formula of the clicked cell
+                formulaField.setText(formula);
+
+                // Add the clicked cell and its associated Cellule to the stack
                 clickedLabel.setBackground(Color.GREEN);
                 clickedLabel.setOpaque(true);
-                visitedCellStack.push(clickedLabel);
+                visitedCellStack.push(new Pair<>(clickedLabel, cell));
                 printStack();
             }
         }
     }
 
-    public void printStack() {
+    private void printStack() {
         System.out.println("Stack contents:");
-        for (JLabel label : visitedCellStack) {
-            System.out.println(label.getText());
+        for (Pair<JLabel, Cellule> pair : visitedCellStack) {
+            JLabel label = pair.getFirst();
+            Cellule cell = pair.getSecond();
+            System.out.println(label.getText() + ": " + cell.getFormule());
         }
     }
+
+    private void applyFormula() {
+    if (!visitedCellStack.isEmpty()) {
+        Pair<JLabel, Cellule> selectedPair = visitedCellStack.peek();
+        JLabel selectedLabel = selectedPair.getFirst();
+        Cellule selectedCell = selectedPair.getSecond();
+
+        // Print the formula for the selected cell
+        String formula = formulaField.getText();
+        System.out.println("Formula entered for " + selectedLabel.getText() + ": " + formula);
+
+        // Set the formula of the selected cell to the formula field text
+        selectedCell.setFormule(formula);
+
+        // Create a CellManager for the selected cell and evaluate the formula
+        CellManager cellManager = new CellManager(selectedLabel.getText(), dicoCell, formula);
+        cellManager.evaluateCell();
+        System.out.println("Result of evaluating " + selectedLabel.getText() + ": " + cellManager.getCellValue());
+
+        // Update the value of the selected cell
+        selectedCell.setValeur(cellManager.getCellValue());
+
+        // Optionally, update the UI to reflect the new value in the cell
+        // For example, you can set the text of the JLabel to the new value
+        selectedLabel.setText(String.valueOf(selectedCell.getValeur()));
+
+        // Print the list of dependencies for the selected cell
+        System.out.println("LAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        selectedCell.printDependencies();
+
+        //printDicoCellContents();
+    }
+}
+
+    
+    private void printDicoCellContents() {
+        System.out.println("Contents of dicoCell:");
+    
+        for (Map.Entry<String, Cellule> entry : dicoCell.getDico().entrySet()) {
+            String cellName = entry.getKey();
+            Cellule cell = entry.getValue();
+            System.out.println(cellName + ": " + cell.getValeur());
+        }
+    }
+    
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

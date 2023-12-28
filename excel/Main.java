@@ -1,4 +1,4 @@
-package excel;
+//package excel;
 
 /**
  * La classe Main contient la méthode principale pour exécuter (l'ancien) programme de calcul préfixe.

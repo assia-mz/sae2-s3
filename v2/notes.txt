@@ -8,8 +8,8 @@
 (X) Refresh when we change a formula 
 (X) Try to print DicoRef
 
-() Mark an error when the formula is not prefix
-() Make the formula print if not calculable
+(X) Mark an error when the formula is not prefix
+(X) Make the formula print if not calculable
 () Change the color of the cell depending on the state
 
 

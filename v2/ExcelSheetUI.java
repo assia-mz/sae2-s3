@@ -1,4 +1,5 @@
 package v2;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -6,24 +7,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-public class ExcelSheetUI extends JFrame {
+/**
+ * La classe ExcelSheetUI représente l'interface utilisateur d'une feuille de calcul simple.
+ * Elle permet de saisir des formules dans les cellules, d'évaluer les formules, et de visualiser les résultats.
+ */
+public class ExcelSheetUI extends JFrame implements CelluleListener {
     private Map<String, JLabel> cellLabels;
     private JTextField formulaField;
     private Stack<Pair<JLabel, Cellule>> visitedCellStack = new Stack<>();
     private DicoDesReferencesCellules dicoCell;
 
+    /**
+     * Constructeur de la classe ExcelSheetUI.
+     * Initialise l'interface utilisateur avec des panneaux pour les formules et les cellules.
+     */
     public ExcelSheetUI() {
-        setTitle("Excel Sheet");
+        setTitle("Feuille de calcul Excel");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Create a panel for the JTextField
+        // Créer un panneau pour le JTextField
         JPanel formulaPanel = new JPanel(new FlowLayout());
         formulaField = new JTextField();
-        formulaField.setPreferredSize(new Dimension(200, 25)); // Set preferred size
+        formulaField.setPreferredSize(new Dimension(200, 25)); // Définir la taille préférée
         formulaPanel.add(formulaField);
 
-        // Create a panel for the cells using GridLayout
+        // Créer un panneau pour les cellules en utilisant GridLayout
         JPanel cellPanel = new JPanel(new GridLayout(9, 9));
         cellLabels = new HashMap<>();
         dicoCell = new DicoDesReferencesCellules();
@@ -36,18 +45,18 @@ public class ExcelSheetUI extends JFrame {
 
                 JLabel label = new JLabel(cellName);
                 label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                label.addMouseListener(new CellClickListener(cell));
+                label.addMouseListener(new CellClickListener(cell, this)); // Passe ExcelSheetUI en tant que listener
                 cellLabels.put(cellName, label);
 
                 cellPanel.add(label);
             }
         }
 
-        // Add the formula panel and cell panel to the main panel
+        // Ajouter le panneau de formule et le panneau de cellules au panneau principal
         add(formulaPanel, BorderLayout.NORTH);
         add(cellPanel, BorderLayout.CENTER);
 
-        // Add a key listener to the formula field for "Enter" key
+        // Ajouter un écouteur de clavier au champ de formule pour la touche "Entrée"
         formulaField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,17 +68,36 @@ public class ExcelSheetUI extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Obtient le nom de la cellule en fonction de la ligne et de la colonne.
+     *
+     * @param row Numéro de la ligne.
+     * @param col Numéro de la colonne.
+     * @return Le nom de la cellule.
+     */
     private String getCellName(int row, int col) {
         char columnLetter = (char) ('A' + col);
         int rowNumber = row + 1;
         return String.valueOf(columnLetter) + rowNumber;
     }
 
+    /**
+     * La classe interne CellClickListener gère les clics de souris sur les cellules.
+     * Elle met à jour le champ de formule et la pile de cellules visitées.
+     */
     private class CellClickListener extends MouseAdapter {
         private Cellule cell;
+        private CelluleListener listener;
 
-        public CellClickListener(Cellule cell) {
+        /**
+         * Constructeur de la classe CellClickListener.
+         *
+         * @param cell     La cellule associée au listener.
+         * @param listener Le listener pour les mises à jour de cellules.
+         */
+        public CellClickListener(Cellule cell, CelluleListener listener) {
             this.cell = cell;
+            this.listener = listener;
         }
 
         @Override
@@ -86,81 +114,98 @@ public class ExcelSheetUI extends JFrame {
             if (component instanceof JLabel) {
                 JLabel clickedLabel = (JLabel) component;
                 String cellName = clickedLabel.getText();
-                System.out.println("Clicked on cell: " + cellName);
+                System.out.println("Cliqué sur la cellule : " + cellName);
 
-                // Print the formula for the clicked cell
-                String formula = cell.getFormule();
-                System.out.println("Formula for " + cellName + ": " + formula);
+                // Afficher la formule pour la cellule cliquée
+                String formule = cell.getFormule();
+                System.out.println("Formule pour " + cellName + " : " + formule);
 
-                // Set the formula field text to the formula of the clicked cell
-                formulaField.setText(formula);
+                // Définir le texte du champ de formule sur la formule de la cellule cliquée
+                formulaField.setText(formule);
 
-                // Add the clicked cell and its associated Cellule to the stack
+                // Ajouter la cellule cliquée et sa Cellule associée à la pile
                 clickedLabel.setBackground(Color.GREEN);
                 clickedLabel.setOpaque(true);
                 visitedCellStack.push(new Pair<>(clickedLabel, cell));
+                listener.onCellUpdated(cell); // Notifier le listener (ExcelSheetUI)
                 printStack();
             }
         }
     }
 
+    /**
+     * Affiche le contenu de la pile de cellules visitées.
+     */
     private void printStack() {
-        System.out.println("Stack contents:");
+        System.out.println("Contenu de la pile :");
         for (Pair<JLabel, Cellule> pair : visitedCellStack) {
             JLabel label = pair.getFirst();
             Cellule cell = pair.getSecond();
-            System.out.println(label.getText() + ": " + cell.getFormule());
+            System.out.println(label.getText() + " : " + cell.getFormule());
         }
     }
 
+    /**
+     * Applique la formule du champ de formule à la cellule sélectionnée.
+     * Évalue la formule et met à jour l'interface utilisateur en conséquence.
+     */
     private void applyFormula() {
-    if (!visitedCellStack.isEmpty()) {
-        Pair<JLabel, Cellule> selectedPair = visitedCellStack.peek();
-        JLabel selectedLabel = selectedPair.getFirst();
-        Cellule selectedCell = selectedPair.getSecond();
+        if (!visitedCellStack.isEmpty()) {
+            Pair<JLabel, Cellule> selectedPair = visitedCellStack.peek();
+            JLabel selectedLabel = selectedPair.getFirst();
+            Cellule selectedCell = selectedPair.getSecond();
 
-        // Print the formula for the selected cell
-        String formula = formulaField.getText();
-        System.out.println("Formula entered for " + selectedLabel.getText() + ": " + formula);
+            // Afficher la formule pour la cellule sélectionnée
+            String formule = formulaField.getText();
+            System.out.println("Formule entrée pour " + selectedLabel.getText() + " : " + formule);
 
-        // Set the formula of the selected cell to the formula field text
-        selectedCell.setFormule(formula);
+            // Définir la formule de la cellule sélectionnée sur le texte du champ de formule
+            selectedCell.setFormule(formule);
 
-        // Create a CellManager for the selected cell and evaluate the formula
-        CellManager cellManager = new CellManager(selectedLabel.getText(), dicoCell, formula);
-        cellManager.evaluateCell();
-        System.out.println("Result of evaluating " + selectedLabel.getText() + ": " + cellManager.getCellValue());
+            // Créer un CellManager pour la cellule sélectionnée et évaluer la formule
+            CellManager cellManager = new CellManager(selectedLabel.getText(), dicoCell, formule);
+            cellManager.evaluateCell();
+            System.out.println("Résultat de l'évaluation de " + selectedLabel.getText() + " : " + cellManager.getCellValue());
 
-        // Update the value of the selected cell
-        selectedCell.setValeur(cellManager.getCellValue());
+            // Mettre à jour la valeur de la cellule sélectionnée
+            selectedCell.setValeur(cellManager.getCellValue());
 
-        // Optionally, update the UI to reflect the new value in the cell
-        // For example, you can set the text of the JLabel to the new value
-        selectedLabel.setText(String.valueOf(selectedCell.getValeur()));
+            // Facultativement, mettre à jour l'interface utilisateur pour refléter la nouvelle valeur dans la cellule
+            // Par exemple, vous pouvez définir le texte du JLabel sur la nouvelle valeur
+            selectedLabel.setText(String.valueOf(selectedCell.getValeur()));
 
-        // Print the list of dependencies for the selected cell
-        System.out.println("LAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-
-        //printDicoCellContents();
+            //printDicoCellContents();
+        }
     }
-}
 
-    
+    /**
+     * Affiche le contenu du dictionnaire de cellules.
+     */
     private void printDicoCellContents() {
-        System.out.println("Contents of dicoCell:");
-    
+        System.out.println("Contenu de dicoCell :");
+
         for (Map.Entry<String, Cellule> entry : dicoCell.getDico().entrySet()) {
             String cellName = entry.getKey();
             Cellule cell = entry.getValue();
-            System.out.println(cellName + ": " + cell.getValeur());
+            System.out.println(cellName + " : " + cell.getValeur());
         }
     }
-    
 
+    /**
+     * Méthode principale pour exécuter l'application.
+     *
+     * @param args Arguments de la ligne de commande (non utilisés dans cet exemple).
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             ExcelSheetUI excelSheetUI = new ExcelSheetUI();
             excelSheetUI.setVisible(true);
         });
+    }
+
+    @Override
+    public void onCellUpdated(Cellule cellule) {
+        // Gérer la mise à jour de la cellule dans l'interface utilisateur
+        // Vous pouvez ajouter une logique supplémentaire ici si nécessaire
     }
 }

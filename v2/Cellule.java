@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+/**
+ * La classe Cellule représente une cellule dans un tableau de feuilles de calcul.
+ * Elle gère la formule associée, les dépendances, et permet l'évaluation de la cellule.
+ */
 public class Cellule {
     private DicoDesReferencesCellules DicoCell;
     private String name;
@@ -15,7 +19,14 @@ public class Cellule {
     private List<Cellule> listeDesDependances;
     private EnumEtatCellule etatCellule;
     private Set<Cellule> currentPath = new HashSet<>();
+    private List<CelluleListener> listeners = new ArrayList<>();
 
+    /**
+     * Constructeur de la classe Cellule.
+     *
+     * @param name     Nom de la cellule.
+     * @param DicoCell Dictionnaire des références des cellules.
+     */
     public Cellule(String name, DicoDesReferencesCellules DicoCell) {
         this.name = name;
         this.DicoCell = DicoCell;
@@ -25,42 +36,109 @@ public class Cellule {
         this.formule = "";
     }
 
-    // +--------------- Basic Methods ---------------+
-
+    /**
+     * Définit la formule associée à la cellule.
+     *
+     * @param formule Formule à définir.
+     */
     public void setFormule(String formule) {
         this.formule = formule;
     }
 
+    /**
+     * Obtient la liste des dépendances de la cellule.
+     *
+     * @return Liste des dépendances.
+     */
     public List<Cellule> getListeDesDependances() {
         return this.listeDesDependances;
     }
 
+    /**
+     * Obtient le nom de la cellule.
+     *
+     * @return Nom de la cellule.
+     */
     public String getName() {
         return this.name;
     }
 
-    public void setValeur(double valeur) {
-        this.valeurCell = valeur;
+    /**
+     * Ajoute un auditeur (listener) à la cellule pour être notifié des mises à jour.
+     *
+     * @param listener Auditeur à ajouter.
+     */
+    public void addListener(CelluleListener listener) {
+        listeners.add(listener);
     }
 
+    /**
+     * Supprime un auditeur (listener) de la cellule.
+     *
+     * @param listener Auditeur à supprimer.
+     */
+    public void removeListener(CelluleListener listener) {
+        listeners.remove(listener);
+    }
+
+    /**
+     * Notifie tous les auditeurs en cas de mise à jour de la cellule.
+     */
+    private void notifyListeners() {
+        for (CelluleListener listener : listeners) {
+            listener.onCellUpdated(this);
+        }
+    }
+
+    /**
+     * Définit la valeur de la cellule et notifie les auditeurs.
+     *
+     * @param valeur Nouvelle valeur de la cellule.
+     */
+    public void setValeur(double valeur) {
+        this.valeurCell = valeur;
+        notifyListeners();
+    }
+
+    /**
+     * Obtient la valeur actuelle de la cellule.
+     *
+     * @return Valeur de la cellule.
+     */
     public double getValeur() {
         return this.valeurCell;
     }
 
+    /**
+     * Obtient l'état actuel de la cellule.
+     *
+     * @return État de la cellule.
+     */
     public EnumEtatCellule getEtatCellule() {
         return this.etatCellule;
     }
 
+    /**
+     * Obtient la formule associée à la cellule.
+     *
+     * @return Formule de la cellule.
+     */
     public String getFormule() {
         return this.formule;
     }
 
+    /**
+     * Obtient l'arbre d'expression associé à la cellule.
+     *
+     * @return Arbre d'expression.
+     */
     public Tree<String> getArbre() {
         return arbre;
     }
 
-    // +--------------- Tree Creation Methods ---------------+
-
+    /**
+     * Parcourt la formule et construit l'arbre d'expression correspondant.
+     */
     public void parcourirFormule() {
         String[] tokens = formule.split("\\s+");
         Stack<Node<String>> stack = new Stack<>();
@@ -72,12 +150,9 @@ public class Cellule {
             Node<String> newNode;
 
             if (isCellReference(token)) {
-                System.out.println("Cell reference found: " + token);
                 Cellule referencedCell = DicoCell.getCellule(token);
                 if (referencedCell != null) {
                     addDependance(referencedCell);
-                } else {
-                    System.out.println("Cell not found for reference: " + token);
                 }
                 newNode = new Node<>(token, false);
                 operandCount++;
@@ -89,7 +164,7 @@ public class Cellule {
             if (isOperator(token)) {
                 operatorCount++;
                 if (stack.size() < 2) {
-                    throw new IllegalArgumentException("Invalid expression: insufficient operands for operator " + token + ". Please check your expression.");
+                    throw new IllegalArgumentException("Expression invalide : opérandes insuffisantes pour l'opérateur " + token + ". Veuillez vérifier votre expression.");
                 }
 
                 newNode.addSubNode(stack.pop());
@@ -100,31 +175,56 @@ public class Cellule {
         }
 
         if (operatorCount >= operandCount || stack.size() != 1) {
-            throw new IllegalArgumentException("Invalid expression: check your expression.");
+            throw new IllegalArgumentException("Expression invalide : veuillez vérifier votre expression.");
         }
 
         this.arbre.setRootNode(stack.pop());
     }
 
+    /*
+     * 
+     * @param an element from the formula (e.g. an operator like "+" or a number like 1)
+     * 
+     * @return true if the token is an operator
+     * 
+     */
     private boolean isOperator(String token) {
         return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
     }
 
+    /*
+     * returns true if the parameter is apparently a reference to another cell
+     * 
+     * @return boolean 
+     */
     private boolean isCellReference(String token) {
         boolean result = token.matches("[A-I]+\\d+");
         return result;
     }
 
+    /**
+     * Affiche l'arbre d'expression pour la cellule spécifiée.
+     *
+     * @param cellule Cellule pour laquelle afficher l'arbre.
+     */
     public void showExpressionTree(Cellule cellule) {
         cellule.getArbre().showTree();
     }
 
+    /**
+     * Ajoute une dépendance à la cellule.
+     *
+     * @param cell Cellule dépendante.
+     */
     public void addDependance(Cellule cell) {
-        System.out.println(this.listeDesDependances.add(cell));
+        this.listeDesDependances.add(cell);
     }
 
-    // +-------------------- Circular Dependency Check --------------------+
-
+    /**
+     * Vérifie s'il existe une dépendance circulaire pour la cellule.
+     *
+     * @return True s'il y a une dépendance circulaire, sinon False.
+     */
     public boolean hasCircularDependency() {
         Set<Cellule> visited = new HashSet<>();
         Set<Cellule> currentPath = new HashSet<>();
@@ -139,6 +239,9 @@ public class Cellule {
         return false;
     }
 
+    /*
+     * a corriger
+     */
     private boolean hasCircularDependencyDFS(Cellule cell, Set<Cellule> visited, Set<Cellule> currentPath) {
         visited.add(cell);
         currentPath.add(cell);
@@ -156,9 +259,14 @@ public class Cellule {
         return false;
     }
 
-    // +-------------- Calculation Method ----------------+
-
+    /**
+     * Évalue la cellule en fonction de sa formule.
+     */
     public void evaluateCell() {
+        if (hasCircularDependency()) {
+            throw new IllegalStateException("Dépendance circulaire détectée. Impossible d'évaluer la cellule " + this.getName());
+        }
+
         this.valeurCell = evaluateNode(this.arbre.getRootNode());
         printDependencies();
     }
@@ -177,7 +285,7 @@ public class Cellule {
                 if (referencedCell != null) {
                     return referencedCell.getValeur();
                 } else {
-                    throw new IllegalArgumentException("Cell not found for reference: " + value);
+                    throw new IllegalArgumentException("Cellule non trouvée pour la référence : " + value);
                 }
             } else {
                 return Double.parseDouble(value);
@@ -185,6 +293,15 @@ public class Cellule {
         }
     }
 
+    /*
+     * Fait le calcul entre les deux parametres selon l'operateur
+     * 
+     * @param string operateur
+     * @param double première valeur
+     * @param double deuxième valeur
+     * @return le resultat du calcul
+     * 
+     */
     private double performOperation(String operator, double operand1, double operand2) {
         switch (operator) {
             case "+":
@@ -195,19 +312,21 @@ public class Cellule {
                 return operand1 * operand2;
             case "/":
                 if (operand2 == 0) {
-                    throw new ArithmeticException("Division by zero");
+                    throw new ArithmeticException("Division par zéro");
                 }
                 return operand1 / operand2;
             default:
-                throw new IllegalArgumentException("Unsupported operator: " + operator);
+                throw new IllegalArgumentException("Opérateur non pris en charge : " + operator);
         }
     }
 
+    /**
+     * Affiche les dépendances de la cellule.
+     */
     public void printDependencies() {
-        System.out.println("Dependencies for cell " + this.getName() + ":");
+        System.out.println("Dépendances pour la cellule " + this.getName() + " :");
         for (Cellule dependency : this.getListeDesDependances()) {
             System.out.println(dependency.getName());
         }
     }
-
 }

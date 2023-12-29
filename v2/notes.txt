@@ -15,5 +15,8 @@
 
 
 When all of this works REALLY WELL with only numbers 
-() Try to print DicoRef
-() Work on references
+(X) Try to print DicoRef
+(X) Make references to other cells
+(X) Check if the cell depend on another one
+() Check if it's circular 
+() Update all of the cells depending on the cell we modified

@@ -1,4 +1,4 @@
-package v2;
+package v4;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class CellManager {
      * @param formula      Formule associée à la cellule.
      * @param dependencies Liste des dépendances de la cellule.
      */
-    public CellManager(String name, DicoDesReferencesCellules dicoCell, String formula) {
+    public CellManager(String name, DicoDesReferencesCellules dicoCell, String formula, List<Cellule> dependencies) {
         // Créer une nouvelle instance de Cellule avec le nom, le dictionnaire, et les dépendances fournis
         this.cell = new Cellule(name, dicoCell);
         this.cell.setFormule(formula);

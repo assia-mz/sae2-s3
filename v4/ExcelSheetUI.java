@@ -1,4 +1,4 @@
-package v2;
+package v4;
 
 import javax.swing.*;
 import java.awt.*;
@@ -105,8 +105,8 @@ public class ExcelSheetUI extends JFrame implements CelluleListener {
             if (!visitedCellStack.isEmpty()) {
                 Pair<JLabel, Cellule> oldPair = visitedCellStack.pop();
                 JLabel oldLabel = oldPair.getFirst();
-                oldLabel.setBackground(Color.RED);
-                oldLabel.setOpaque(true);
+                oldLabel.setBackground(null); // Clear background color
+                oldLabel.setOpaque(false);
                 oldLabel.repaint();
             }
 
@@ -163,7 +163,7 @@ public class ExcelSheetUI extends JFrame implements CelluleListener {
             selectedCell.setFormule(formule);
     
             // Créer un CellManager pour la cellule sélectionnée et évaluer la formule
-            CellManager cellManager = new CellManager(selectedLabel.getText(), dicoCell, formule);
+            CellManager cellManager = new CellManager(selectedLabel.getText(), dicoCell, formule, selectedCell.getListeDesDependances());
             cellManager.evaluateCell();
             System.out.println("Résultat de l'évaluation de " + selectedLabel.getText() + " : " + cellManager.getCellValue());
     

@@ -1,4 +1,4 @@
-package v2;
+/*package v2;
 
 import java.util.*;
 import javax.swing.SwingUtilities;
@@ -42,4 +42,4 @@ public class Mainv6 {
             System.out.println("Result of evaluating A1: " + cellA1.getValeur());
         });
     }
-}
+}*/

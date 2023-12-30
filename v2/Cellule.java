@@ -248,10 +248,14 @@ public class Cellule {
     private boolean hasCircularDependencyDFS(Cellule cell, Set<Cellule> visited, Set<Cellule> currentPath) {
         visited.add(cell);
         currentPath.add(cell);
+        List<Cellule> jvMeSuiciderCellules = this.getListeDesDependances();
     
-        System.out.println("Checking cell: " + cell.getName()); // Print the name of the current cell
+        System.out.println("Checking cell: " + cell.getName() + "jvMeSuicider size :" + jvMeSuiciderCellules.size());
+
+        
     
-        for (Cellule dependency : cell.getListeDesDependances()) {
+        for (int i=0; i < jvMeSuiciderCellules.size(); i++) {
+            Cellule dependency = jvMeSuiciderCellules.get(i);
             System.out.println("    Dependency: " + dependency.getName());
     
             if (!visited.contains(dependency)) {
@@ -279,11 +283,6 @@ public class Cellule {
         }
 
         this.valeurCell = evaluateNode(this.arbre.getRootNode());
-
-        /*// Evaluate dependencies first
-        for (Cellule dependency : this.listeDesDependances) {
-            dependency.evaluateCell();
-        }*/
 
         printDependencies();
 }

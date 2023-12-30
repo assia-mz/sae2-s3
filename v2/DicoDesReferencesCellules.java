@@ -35,9 +35,7 @@ public class DicoDesReferencesCellules {
      * @return L'instance de Cellule associée au nom de la cellule (ou null si non trouvée).
      */
     public Cellule getCellule(String nameOfCellule) {
-        System.out.println("Recherche de la cellule : " + nameOfCellule);
         Cellule cell = this.dicoRef.get(nameOfCellule);
-        System.out.println("Cellule trouvée : " + cell);
         return cell;
     }
 

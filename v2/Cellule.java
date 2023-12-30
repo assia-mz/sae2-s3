@@ -20,6 +20,7 @@ public class Cellule {
     private EnumEtatCellule etatCellule;
     private Set<Cellule> currentPath = new HashSet<>();
     private List<CelluleListener> listeners = new ArrayList<>();
+    
 
     /**
      * Constructeur de la classe Cellule.
@@ -219,6 +220,7 @@ public class Cellule {
     public void addDependance(Cellule cell) {
         this.listeDesDependances.add(cell);
     }
+    
 
     /**
      * Vérifie s'il existe une dépendance circulaire pour la cellule.
@@ -231,11 +233,12 @@ public class Cellule {
         for (Cellule cell : this.listeDesDependances) {
             if (!visited.contains(cell)) {
                 if (hasCircularDependencyDFS(cell, visited, currentPath)) {
+                    System.out.println("dependance : vrai");
                     return true;
                 }
             }
         }
-
+        System.out.println("dependance : faux");
         return false;
     }
 
@@ -245,19 +248,27 @@ public class Cellule {
     private boolean hasCircularDependencyDFS(Cellule cell, Set<Cellule> visited, Set<Cellule> currentPath) {
         visited.add(cell);
         currentPath.add(cell);
-
+    
+        System.out.println("Checking cell: " + cell.getName()); // Print the name of the current cell
+    
         for (Cellule dependency : cell.getListeDesDependances()) {
+            System.out.println("    Dependency: " + dependency.getName());
+    
             if (!visited.contains(dependency)) {
+                System.out.println("        Visiting dependency for the first time.");
                 if (hasCircularDependencyDFS(dependency, visited, currentPath)) {
                     return true;
                 }
             } else if (currentPath.contains(dependency)) {
+                System.out.println("        Circular dependency detected!");
                 return true;
             }
         }
-
+    
+        currentPath.remove(cell); // Remove the current cell from the current path
         return false;
     }
+    
 
     /**
      * Évalue la cellule en fonction de sa formule.
@@ -268,8 +279,15 @@ public class Cellule {
         }
 
         this.valeurCell = evaluateNode(this.arbre.getRootNode());
+
+        /*// Evaluate dependencies first
+        for (Cellule dependency : this.listeDesDependances) {
+            dependency.evaluateCell();
+        }*/
+
         printDependencies();
-    }
+}
+
 
     private double evaluateNode(Node<String> node) {
         String value = node.getValue();

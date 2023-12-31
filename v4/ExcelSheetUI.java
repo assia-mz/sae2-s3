@@ -127,7 +127,7 @@ public class ExcelSheetUI extends JFrame implements CelluleListener {
                 clickedLabel.setBackground(Color.GREEN);
                 clickedLabel.setOpaque(true);
                 visitedCellStack.push(new Pair<>(clickedLabel, cell));
-                listener.onCellUpdated(cell);
+                //listener.onCellUpdated(cell);
                 //printStack();
             }
         }
@@ -154,30 +154,38 @@ public class ExcelSheetUI extends JFrame implements CelluleListener {
             Pair<JLabel, Cellule> selectedPair = visitedCellStack.peek();
             JLabel selectedLabel = selectedPair.getFirst();
             Cellule selectedCell = selectedPair.getSecond();
-    
+
             // Afficher la formule pour la cellule sélectionnée
-            String formule = formulaField.getText();
-            System.out.println("Formule entrée pour " + selectedLabel.getText() + " : " + formule);
-    
-            // Définir la formule de la cellule sélectionnée sur le texte du champ de formule
-            selectedCell.setFormule(formule);
-    
-            // Créer un CellManager pour la cellule sélectionnée et évaluer la formule
-            CellManager cellManager = new CellManager(selectedLabel.getText(), dicoCell, formule, selectedCell.getListeDesDependances());
-            cellManager.evaluateCell();
-            System.out.println("Résultat de l'évaluation de " + selectedLabel.getText() + " : " + cellManager.getCellValue());
-    
-            // Mettre à jour la valeur de la cellule sélectionnée
-            selectedCell.setValeur(cellManager.getCellValue());
-    
-            // Facultativement, mettre à jour l'interface utilisateur pour refléter la nouvelle valeur dans la cellule
-            // Par exemple, vous pouvez définir le texte du JLabel sur la nouvelle valeur
-            selectedLabel.setText(String.valueOf(selectedCell.getValeur()));
-    
-            //printDicoCellContents();
+            String newFormula = formulaField.getText();
+            System.out.println("Formule entrée pour " + selectedLabel.getText() + " : " + newFormula);
+
+            // Vérifier si la formule a changé
+            String currentFormula = selectedCell.getFormule();
+            if (!newFormula.equals(currentFormula)) {
+
+                // Notify dependents about the formula change
+                dicoCell.notifyDependentsOnFormulaChange(selectedLabel.getText(), newFormula);
+
+                // Définir la formule de la cellule sélectionnée sur le texte du champ de formule
+                selectedCell.setFormule(newFormula);
+
+                // Créer un CellManager pour la cellule sélectionnée et évaluer la formule
+                CellManager cellManager = new CellManager(selectedLabel.getText(), dicoCell, newFormula, selectedCell.getListeDesDependances());
+                cellManager.evaluateCell();
+                System.out.println("Résultat de l'évaluation de " + selectedLabel.getText() + " : " + cellManager.getCellValue());
+
+                // Mettre à jour la valeur de la cellule sélectionnée
+                selectedCell.setValeur(cellManager.getCellValue());
+
+                // Facultativement, mettre à jour l'interface utilisateur pour refléter la nouvelle valeur dans la cellule
+                // Par exemple, vous pouvez définir le texte du JLabel sur la nouvelle valeur
+                selectedLabel.setText(String.valueOf(selectedCell.getValeur()));
+
+                //printDicoCellContents();
+            }
         }
     }
-    
+
 
     /**
      * Affiche le contenu du dictionnaire de cellules.
@@ -206,7 +214,6 @@ public class ExcelSheetUI extends JFrame implements CelluleListener {
 
     @Override
     public void onCellUpdated(Cellule cellule) {
-        // Gérer la mise à jour de la cellule dans l'interface utilisateur
-        // Vous pouvez ajouter une logique supplémentaire ici si nécessaire
+
     }
 }

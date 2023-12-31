@@ -1,7 +1,5 @@
 package v2;
 
-import java.util.List;
-
 /**
  * La classe CellManager gère une cellule dans un tableau de feuilles de calcul.
  * Elle permet de définir une formule, de l'évaluer et d'obtenir la valeur calculée.

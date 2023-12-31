@@ -3,7 +3,6 @@ package v4;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -31,10 +30,6 @@ public class Cellule {
         this.formule = formule;
     }
 
-    public List<Cellule> getDependencies() {
-        return this.listeDesDependances;
-    }
-
     public String getName() {
         return this.name;
     }
@@ -51,15 +46,48 @@ public class Cellule {
         listeners.remove(listener);
     }
 
-    private void notifyListeners() {
-        for (CelluleListener listener : listeners) {
-            listener.onCellUpdated(this);
+    public void notifyDependencies() {
+        System.out.println("Notification");
+        for (Cellule dependency : dicoCell.findCellsDependingOn(this)) {
+            System.out.println("Il faut update");
+            
+            // Store the current formula of the dependent cell for comparison
+            String oldFormula = dependency.getFormule();
+    
+            // Update the formula of the dependent cell
+            dependency.setFormule(dependency.getFormule());
+    
+            // Check if the formula has changed
+            if (oldFormula.equals(dependency.getFormule())) {
+                // If the formula has changed, proceed with updates
+                System.out.println("Formule actuelle : " + dependency.getFormule());
+    
+                printDependencies(this);
+                System.out.println("dependency : ");
+                printDependencies(dependency);
+
+                // Traverse the formula of the dependent cell
+                dependency.parcourirFormule();
+    
+                // Display the expression tree after traversing the formula
+                System.out.println("Arbre après parcourirFormule:");
+                dependency.showExpressionTree(dependency);
+    
+                // Evaluate the dependent cell
+                dependency.evaluateCell();
+    
+                // Notify listeners about the update
+                dependency.notifyDependencies();
+            } else {
+                throw new IllegalArgumentException("Frero t'as throw une erreur rarisime gg.");
+            }
         }
     }
+    
 
     public void setValeur(double valeur) {
         this.valeurCell = valeur;
-        notifyListeners();
+        notifyDependencies();
     }
 
     public double getValeur() {
@@ -116,7 +144,7 @@ public class Cellule {
         if (operatorCount >= operandCount || stack.size() != 1) {
             throw new IllegalArgumentException("Expression invalide : veuillez vérifier votre expression.");
         }
-
+        this.etatCellule = EnumEtatCellule.CALCULABLE;
         this.arbre.setRootNode(stack.pop());
     }
 
@@ -132,16 +160,10 @@ public class Cellule {
         cellule.getArbre().showTree();
     }
 
-    public void addDependance(Cellule cell) {
-        this.listeDesDependances.add(cell);
+    private void addDependance(Cellule cell) {
+        this.dicoCell.addDependencies(this.name, new Cellule[]{cell});
     }
 
-    /**
-    /**
-     * Vérifie s'il existe une dépendance circulaire pour la cellule.
-     *
-     * @return True s'il y a une dépendance circulaire, sinon False.
-     */
     public boolean hasCircularDependency() {
         Set<Cellule> visited = new HashSet<>();
         Set<Cellule> currentPath = new HashSet<>();
@@ -154,19 +176,19 @@ public class Cellule {
         }
         return false;
     }
-
+    
     private boolean hasCircularDependencyDFS(Cellule cell, Set<Cellule> visited, Set<Cellule> currentPath) {
         visited.add(cell);
         currentPath.add(cell);
-
-        System.out.println("Checking cell: " + cell.getName());
-
+    
+        // System.out.println("Checking cell: " + cell.getName());
+        //this.dicoCell.printDependencies(); // Print dependencies
+    
         Cellule[] dependencies = this.dicoCell.getDependencies(cell.getName());
         if (dependencies != null) {
-            System.out.println("dedans");
             for (Cellule dependency : dependencies) {
                 System.out.println("    Dependency: " + dependency.getName());
-
+    
                 if (!visited.contains(dependency)) {
                     System.out.println("        Visiting dependency for the first time.");
                     if (hasCircularDependencyDFS(dependency, visited, currentPath)) {
@@ -178,20 +200,25 @@ public class Cellule {
                 }
             }
         }
-
+    
         currentPath.remove(cell);
         return false;
     }
-
-
-
+    
 
     public void evaluateCell() {
         this.valeurCell = evaluateNode(this.arbre.getRootNode());
 
         if (hasCircularDependency()) {
+            this.etatCellule = EnumEtatCellule.INCORRECTE;
             throw new IllegalStateException("Dépendance circulaire détectée. Impossible d'évaluer la cellule " + this.getName());
         }
+    }
+
+    public void formulaChanged(String newFormula) {
+        setFormule(newFormula);
+        parcourirFormule();
+        evaluateCell();
     }
 
     private double evaluateNode(Node<String> node) {
@@ -224,6 +251,7 @@ public class Cellule {
                 return operand1 * operand2;
             case "/":
                 if (operand2 == 0) {
+                    this.etatCellule = EnumEtatCellule.INCALCULABLE;
                     throw new ArithmeticException("Division par zéro");
                 }
                 return operand1 / operand2;
@@ -232,10 +260,10 @@ public class Cellule {
         }
     }
 
-    /*public void printDependencies(Cellule cell) {
+    public void printDependencies(Cellule cell) {
         System.out.println("Dépendances pour la cellule " + cell.getName() + " :");
         for (Cellule dependency : cell.getListeDesDependances()) {
             System.out.println(dependency.getName());
         }
-    }*/
+    }
 }

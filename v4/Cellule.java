@@ -63,7 +63,6 @@ public class Cellule {
                 System.out.println("Formule actuelle : " + dependency.getFormule());
     
                 printDependencies(this);
-                System.out.println("dependency : ");
                 printDependencies(dependency);
 
                 // Traverse the formula of the dependent cell

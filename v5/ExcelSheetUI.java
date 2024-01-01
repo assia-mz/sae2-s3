@@ -1,4 +1,4 @@
-package v4;
+package v5;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ import java.util.Stack;
  * La classe ExcelSheetUI représente l'interface utilisateur d'une feuille de calcul simple.
  * Elle permet de saisir des formules dans les cellules, d'évaluer les formules, et de visualiser les résultats.
  */
-public class ExcelSheetUI extends JFrame implements CelluleListener {
+public class ExcelSheetUI extends JFrame {
     private Map<String, JLabel> cellLabels;
     private JTextField formulaField;
     private Stack<Pair<JLabel, Cellule>> visitedCellStack = new Stack<>();
@@ -45,7 +45,6 @@ public class ExcelSheetUI extends JFrame implements CelluleListener {
 
                 JLabel label = new JLabel(cellName);
                 label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                label.addMouseListener(new CellClickListener(cell, this)); // Passe ExcelSheetUI en tant que listener
                 cellLabels.put(cellName, label);
 
                 cellPanel.add(label);
@@ -87,17 +86,14 @@ public class ExcelSheetUI extends JFrame implements CelluleListener {
      */
     private class CellClickListener extends MouseAdapter {
         private Cellule cell;
-        private CelluleListener listener;
 
         /**
          * Constructeur de la classe CellClickListener.
          *
          * @param cell     La cellule associée au listener.
-         * @param listener Le listener pour les mises à jour de cellules.
          */
-        public CellClickListener(Cellule cell, CelluleListener listener) {
+        public CellClickListener(Cellule cell) {
             this.cell = cell;
-            this.listener = listener;
         }
 
         @Override
@@ -210,10 +206,5 @@ public class ExcelSheetUI extends JFrame implements CelluleListener {
             ExcelSheetUI excelSheetUI = new ExcelSheetUI();
             excelSheetUI.setVisible(true);
         });
-    }
-
-    @Override
-    public void onCellUpdated(Cellule cellule) {
-
     }
 }

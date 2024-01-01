@@ -1,4 +1,4 @@
-package v4;
+package v5;
 
 /**
  * La classe CellManager gère une cellule dans un tableau de feuilles de calcul.

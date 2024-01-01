@@ -1,8 +1,6 @@
-package v4;
+package v5;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
@@ -13,8 +11,7 @@ public class Cellule {
     private String formule;
     private Tree<String> arbre;
     private EnumEtatCellule etatCellule;
-    private Set<Cellule> currentPath = new HashSet<>();
-    private List<CelluleListener> listeners = new ArrayList<>();
+    //private Set<Cellule> currentPath = new HashSet<>();
 
     public Cellule(String name, DicoDesReferencesCellules dicoCell) {
         this.name = name;
@@ -30,14 +27,6 @@ public class Cellule {
 
     public String getName() {
         return this.name;
-    }
-
-    public void addListener(CelluleListener listener) {
-        listeners.add(listener);
-    }
-
-    public void removeListener(CelluleListener listener) {
-        listeners.remove(listener);
     }
 
     public void notifyDependencies() {
@@ -56,9 +45,6 @@ public class Cellule {
         // Iterate through dependencies and update
         for (Cellule dependency : dicoCell.findCellsDependingOn(this)) {
             System.out.println("Il faut update");
-            
-            // Store the current formula of the dependent cell for comparison
-            String oldFormula = dependency.getFormule();
     
             // Update the formula of the dependent cell
             dependency.setFormule(dependency.getFormule());

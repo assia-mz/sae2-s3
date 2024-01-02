@@ -45,6 +45,7 @@ public class ExcelSheetUI extends JFrame {
 
                 JLabel label = new JLabel(cellName);
                 label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                label.addMouseListener(new CellClickListener(cell)); // Passe ExcelSheetUI en tant que listener
                 cellLabels.put(cellName, label);
 
                 cellPanel.add(label);
@@ -91,6 +92,7 @@ public class ExcelSheetUI extends JFrame {
          * Constructeur de la classe CellClickListener.
          *
          * @param cell     La cellule associée au listener.
+         * @param listener Le listener pour les mises à jour de cellules.
          */
         public CellClickListener(Cellule cell) {
             this.cell = cell;
@@ -120,7 +122,9 @@ public class ExcelSheetUI extends JFrame {
                 formulaField.setText(formule);
 
                 // Ajouter la cellule cliquée et sa Cellule associée à la pile
-                clickedLabel.setBackground(Color.GREEN);
+                // Set the background color based on EnumEtatCellule
+                clickedLabel.setBackground(getColorForEtatCellule(cell.getEtatCellule()));
+                System.out.println(cell.getEtatCellule());
                 clickedLabel.setOpaque(true);
                 visitedCellStack.push(new Pair<>(clickedLabel, cell));
                 //listener.onCellUpdated(cell);
@@ -150,37 +154,42 @@ public class ExcelSheetUI extends JFrame {
             Pair<JLabel, Cellule> selectedPair = visitedCellStack.peek();
             JLabel selectedLabel = selectedPair.getFirst();
             Cellule selectedCell = selectedPair.getSecond();
-
+    
             // Afficher la formule pour la cellule sélectionnée
             String newFormula = formulaField.getText();
             System.out.println("Formule entrée pour " + selectedLabel.getText() + " : " + newFormula);
-
+    
             // Vérifier si la formule a changé
             String currentFormula = selectedCell.getFormule();
             if (!newFormula.equals(currentFormula)) {
-
+    
                 // Notify dependents about the formula change
                 dicoCell.notifyDependentsOnFormulaChange(selectedLabel.getText(), newFormula);
-
+    
                 // Définir la formule de la cellule sélectionnée sur le texte du champ de formule
                 selectedCell.setFormule(newFormula);
-
+    
                 // Créer un CellManager pour la cellule sélectionnée et évaluer la formule
                 CellManager cellManager = new CellManager(selectedLabel.getText(), dicoCell, newFormula);
-                cellManager.evaluateCell();
-                System.out.println("Résultat de l'évaluation de " + selectedLabel.getText() + " : " + cellManager.getCellValue());
-
-                // Mettre à jour la valeur de la cellule sélectionnée
-                selectedCell.setValeur(cellManager.getCellValue());
-
-                // Facultativement, mettre à jour l'interface utilisateur pour refléter la nouvelle valeur dans la cellule
-                // Par exemple, vous pouvez définir le texte du JLabel sur la nouvelle valeur
-                selectedLabel.setText(String.valueOf(selectedCell.getValeur()));
-
-                //printDicoCellContents();
+    
+                // Check if the formula is calculable
+                if (cellManager.isCalculable()) {
+                    System.out.println("Résultat de l'évaluation de " + selectedLabel.getText() + " : " + cellManager.getCellValue());
+    
+                    // Mettre à jour la valeur de la cellule sélectionnée
+                    selectedCell.setValeur(cellManager.getCellValue());
+    
+                    // Facultativement, mettre à jour l'interface utilisateur pour refléter la nouvelle valeur dans la cellule
+                    // Par exemple, vous pouvez définir le texte du JLabel sur la nouvelle valeur
+                    selectedLabel.setText(String.valueOf(selectedCell.getValeur()));
+                } else {
+                    // If the formula is not calculable, display the formula on the cell
+                    selectedLabel.setText(newFormula);
+                }
             }
         }
     }
+    
 
 
     /**
@@ -193,6 +202,21 @@ public class ExcelSheetUI extends JFrame {
             String cellName = entry.getKey();
             Cellule cell = entry.getValue();
             System.out.println(cellName + " : " + cell.getValeur());
+        }
+    }
+
+    private Color getColorForEtatCellule(EnumEtatCellule etatCellule) {
+        switch (etatCellule) {
+            case VIDE:
+                return Color.WHITE;
+            case CALCULABLE:
+                return Color.GREEN;
+            case INCALCULABLE:
+                return Color.ORANGE;
+            case INCORRECTE:
+                return Color.RED;
+            default:
+                return Color.WHITE;
         }
     }
 

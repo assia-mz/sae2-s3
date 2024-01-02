@@ -21,6 +21,8 @@ public class Cellule {
         this.formule = "";
     }
 
+    
+
     public void setFormule(String formule) {
         this.formule = formule;
     }
@@ -94,14 +96,19 @@ public class Cellule {
         Stack<Node<String>> stack = new Stack<>();
         int operandCount = 0;
         int operatorCount = 0;
-
+    
         for (int i = tokens.length - 1; i >= 0; i--) {
             String token = tokens[i];
             Node<String> newNode;
-
+    
             if (isCellReference(token)) {
                 Cellule referencedCell = dicoCell.getCellule(token);
                 if (referencedCell != null) {
+                    // Add dependency only if the referenced cell has a non-default formula
+                    if (referencedCell.getFormule().equals("")) {
+                        setIncorrectState();
+                        return;
+                    }
                     addDependance(referencedCell);
                 }
                 newNode = new Node<>(token, false);
@@ -110,26 +117,36 @@ public class Cellule {
                 newNode = new Node<>(token, true);
                 operandCount++;
             }
-
+    
             if (isOperator(token)) {
                 operatorCount++;
                 if (stack.size() < 2) {
-                    throw new IllegalArgumentException("Expression invalide : opérandes insuffisantes pour l'opérateur " + token + ". Veuillez vérifier votre expression.");
+                    setIncorrectState();
+                    return;
                 }
-
+    
                 newNode.addSubNode(stack.pop());
                 newNode.addSubNode(stack.pop());
             }
-
+    
             stack.push(newNode);
         }
-
-        if (operatorCount >= operandCount || stack.size() != 1) {
-            throw new IllegalArgumentException("Expression invalide : veuillez vérifier votre expression.");
-        }
         this.etatCellule = EnumEtatCellule.CALCULABLE;
+        System.out.println("Update calculable");
+    
+        if (operatorCount >= operandCount || stack.size() != 1) {
+            setIncorrectState();
+            return;
+        }
         this.arbre.setRootNode(stack.pop());
     }
+    
+    private void setIncorrectState() {
+        this.etatCellule = EnumEtatCellule.INCORRECTE;
+    }
+    
+    
+    
 
     private boolean isOperator(String token) {
         return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
@@ -202,7 +219,24 @@ public class Cellule {
         setFormule(newFormula);
         parcourirFormule();
         evaluateCell();
+    
+        // Set the state based on your business logic
+        if (hasCircularDependency()) {
+            this.etatCellule = EnumEtatCellule.INCORRECTE;
+            throw new IllegalStateException("Dépendance circulaire détectée. Impossible d'évaluer la cellule " + this.getName());
+        }
+    
+        // Add more conditions to set the state as needed
+        // For example, if the formula is empty, set the state to VIDE
+        if (newFormula.isEmpty()) {
+            this.etatCellule = EnumEtatCellule.VIDE;
+        } else {
+            this.etatCellule = EnumEtatCellule.CALCULABLE;
+        }
+    
+        notifyDependencies();
     }
+    
 
     private double evaluateNode(Node<String> node) {
         String value = node.getValue();

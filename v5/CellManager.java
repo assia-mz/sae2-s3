@@ -38,4 +38,15 @@ public class CellManager {
     public double getCellValue() {
         return this.cell.getValeur();
     }
+
+    // Add this method to the CellManager class
+    public boolean isCalculable() {
+        // Your logic to check if the formula is valid for calculation
+        try {
+            evaluateCell(); // Try to evaluate the cell
+            return true;    // If successful, the formula is calculable
+        } catch (Exception e) {
+            return false;   // If an exception occurs during evaluation, the formula is not calculable
+        }
+    }
 }

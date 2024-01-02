@@ -18,5 +18,9 @@ When all of this works REALLY WELL with only numbers
 (X) Try to print DicoRef
 (X) Make references to other cells
 (X) Check if the cell depend on another one
-() Check if it's circular 
+(X) Check if it's circular 
 () Update all of the cells depending on the cell we modified
+
+Piste pour les bugs:
+() Regarder les valeurs dans dico
+() Regarder la valeur de EtatCellule (pour l'instant tjr en 'vide')
